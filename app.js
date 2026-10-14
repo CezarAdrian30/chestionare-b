@@ -7,18 +7,6 @@ let userSelections = new Set();
 let secondsLeft = 30 * 60;
 let timerRef = null;
 
-// Modul suport reclame (gestionează ascunderea în timpul examenului și afișarea la final)
-const AdManager = {
-  onTestStart() {
-    // În timpul examenului nu afișăm reclame pentru a nu distrage candidatul
-    console.log("[AdMob] Examen pornit - banner ascuns.");
-  },
-  onTestEnd() {
-    // La finalul examenului se poate apela reclama nativă AdMob
-    console.log("[AdMob] Examen încheiat - banner activat pe ecranul de rezultat.");
-  }
-};
-
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -29,14 +17,13 @@ function shuffleArray(array) {
 }
 
 function initTest() {
-  const source = window.questionsData;
+  // Preluăm baza de date indiferent cum este denumită în questions.js
+  const source = window.questionsData || window.localDatabase || (typeof localDatabase !== 'undefined' ? localDatabase : null);
 
   if (!source || !Array.isArray(source) || source.length === 0) {
-    alert("Eroare: Fișierul questions.js nu conține date sau nu a fost găsit!");
+    alert("Eroare: Nu am putut citi baza de întrebări din questions.js!");
     return;
   }
-
-  AdManager.onTestStart();
 
   activeQuestions = shuffleArray(source).slice(0, 26);
   initialTotal = activeQuestions.length;
@@ -181,17 +168,35 @@ function finalize(isPassed, details) {
   document.getElementById('quizScreen').classList.remove('active');
   document.getElementById('endScreen').classList.add('active');
 
-  AdManager.onTestEnd();
-
   const title = document.getElementById('endTitle');
   title.textContent = isPassed ? "ADMIS 🎉" : "RESPINS ❌";
   title.style.color = isPassed ? "#34d399" : "#f87171";
   document.getElementById('endSubtitle').textContent = details;
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btnStart').addEventListener('click', initTest);
-  document.getElementById('btnRestart').addEventListener('click', () => location.reload());
-  document.getElementById('btnClear').addEventListener('click', clearSelection);
-  document.getElementById('btnDefer').addEventListener('click', deferQuestion);
-});
+// Expunere globală sigură pentru a putea fi apelate oricând
+window.initTest = initTest;
+window.clearSelection = clearSelection;
+window.deferQuestion = deferQuestion;
+window.validateCurrentAnswer = validateCurrentAnswer;
+
+// Legare evenimente tolerantă la încărcare
+function bindEvents() {
+  const btnStart = document.getElementById('btnStart');
+  if (btnStart) btnStart.onclick = initTest;
+
+  const btnRestart = document.getElementById('btnRestart');
+  if (btnRestart) btnRestart.onclick = () => location.reload();
+
+  const btnClear = document.getElementById('btnClear');
+  if (btnClear) btnClear.onclick = clearSelection;
+
+  const btnDefer = document.getElementById('btnDefer');
+  if (btnDefer) btnDefer.onclick = deferQuestion;
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindEvents);
+} else {
+  bindEvents();
+}
