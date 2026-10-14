@@ -6,6 +6,7 @@ let deferredCount = 0;
 let userSelections = new Set();
 let secondsLeft = 30 * 60;
 let timerRef = null;
+let isPaused = false;
 
 function shuffleArray(array) {
   const arr = [...array];
@@ -17,7 +18,6 @@ function shuffleArray(array) {
 }
 
 function initTest() {
-  // Preluăm baza de date indiferent cum este denumită în questions.js
   const source = window.questionsData || window.localDatabase || (typeof localDatabase !== 'undefined' ? localDatabase : null);
 
   if (!source || !Array.isArray(source) || source.length === 0) {
@@ -32,6 +32,7 @@ function initTest() {
   wrongCount = 0;
   deferredCount = 0;
   secondsLeft = 30 * 60;
+  isPaused = false;
 
   document.getElementById('lblCorrect').textContent = '0';
   document.getElementById('lblWrong').textContent = '0';
@@ -41,8 +42,37 @@ function initTest() {
   document.getElementById('quizScreen').classList.add('active');
 
   renderQuestion();
+  startTimer();
+}
+
+function startTimer() {
   if (timerRef) clearInterval(timerRef);
   timerRef = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if (timerRef) {
+    clearInterval(timerRef);
+    timerRef = null;
+  }
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  const overlay = document.getElementById('pauseOverlay');
+  const icon = document.getElementById('iconPause');
+
+  if (isPaused) {
+    stopTimer();
+    overlay.classList.add('active');
+    // Schimbăm pictograma în Play ▶
+    icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  } else {
+    startTimer();
+    overlay.classList.remove('active');
+    // Schimbăm pictograma în Pauză ⏸
+    icon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+  }
 }
 
 function updateCounters() {
@@ -54,6 +84,8 @@ function updateCounters() {
 }
 
 function updateTimer() {
+  if (isPaused) return;
+
   secondsLeft--;
   const min = Math.floor(secondsLeft / 60);
   const sec = secondsLeft % 60;
@@ -92,6 +124,7 @@ function renderQuestion() {
     item.id = `opt-${opt.id}`;
     item.innerHTML = `<span class="opt-tag">${opt.id}</span><span>${opt.text}</span>`;
     item.onclick = () => {
+      if (isPaused) return;
       if (userSelections.has(opt.id)) {
         userSelections.delete(opt.id);
         item.classList.remove('selected');
@@ -107,11 +140,13 @@ function renderQuestion() {
 }
 
 function clearSelection() {
+  if (isPaused) return;
   userSelections.clear();
   document.querySelectorAll('.opt-card').forEach(el => el.classList.remove('selected'));
 }
 
 function deferQuestion() {
+  if (isPaused) return;
   if (activeQuestions.length <= 1) {
     alert("Aceasta este ultima întrebare din chestionar!");
     return;
@@ -123,6 +158,8 @@ function deferQuestion() {
 }
 
 function validateCurrentAnswer() {
+  if (isPaused) return;
+
   const q = activeQuestions[0];
   const selectedArr = Array.from(userSelections).sort();
   const correctArr = [...q.correct].sort();
@@ -164,7 +201,7 @@ function advance() {
 }
 
 function finalize(isPassed, details) {
-  clearInterval(timerRef);
+  stopTimer();
   document.getElementById('quizScreen').classList.remove('active');
   document.getElementById('endScreen').classList.add('active');
 
@@ -174,13 +211,13 @@ function finalize(isPassed, details) {
   document.getElementById('endSubtitle').textContent = details;
 }
 
-// Expunere globală sigură pentru a putea fi apelate oricând
+// Expunere globală
 window.initTest = initTest;
 window.clearSelection = clearSelection;
 window.deferQuestion = deferQuestion;
 window.validateCurrentAnswer = validateCurrentAnswer;
+window.togglePause = togglePause;
 
-// Legare evenimente tolerantă la încărcare
 function bindEvents() {
   const btnStart = document.getElementById('btnStart');
   if (btnStart) btnStart.onclick = initTest;
