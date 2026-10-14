@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AutoPass B • 2026</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg-main: #060913;
-      --surface: rgba(17, 24, 39, 0.7);
+      --surface: rgba(17, 24, 39, 0.75);
       --surface-border: rgba(255, 255, 255, 0.08);
       --primary: #3b82f6;
       --primary-glow: rgba(59, 130, 246, 0.35);
@@ -23,7 +20,7 @@
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; 
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
       -webkit-tap-highlight-color: transparent; 
     }
     
@@ -121,7 +118,7 @@
       color: #ffffff;
     }
 
-    /* Caseta imaginii */
+    /* Imagine */
     .q-image-container {
       margin-top: 12px;
       border-radius: 12px;
@@ -182,7 +179,7 @@
       color: #1d4ed8;
     }
 
-    /* Explicație oficială */
+    /* Explicație */
     .expl-box {
       background: rgba(6, 78, 59, 0.5);
       border: 1px solid rgba(52, 211, 153, 0.3);
@@ -241,7 +238,7 @@
     </div>
     <h1 class="hero-title">AutoPass B</h1>
     <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 28px;">Simulator examen oficial DRPCIV / DGPCI cu întrebări și imagini rutiere.</p>
-    <button class="btn btn-submit" id="btnStart" onclick="startTest()">Începe Chestionarul</button>
+    <button class="btn btn-submit" id="btnStart">Începe Chestionarul</button>
   </div>
 
   <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
@@ -257,192 +254,3 @@
       </div>
       <div class="stat-pill pill-timer" id="lblTimer">30:00</div>
     </div>
-
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="scroll-content">
-      <div class="card-question">
-        <div class="q-badge">Întrebarea <span id="lblIndex">1</span> din <span id="lblTotal">26</span></div>
-        <div class="q-text" id="lblQuestionText"></div>
-        
-        <div class="q-image-container" id="imgContainer">
-          <img src="" id="qImage" class="q-image" alt="Situație rutieră">
-        </div>
-      </div>
-
-      <div class="options-group" id="containerOptions"></div>
-      <div id="boxExplanation" class="expl-box"></div>
-    </div>
-
-    <div class="bottom-bar">
-      <button class="btn btn-submit" id="btnAction" onclick="validateCurrentAnswer()">Trimite Răspunsul</button>
-    </div>
-  </div>
-
-  <!-- ECRAN 3: REZULTAT FINAL -->
-  <div id="endScreen" class="screen" style="justify-content: center; text-align: center; padding: 24px;">
-    <h1 id="endTitle" style="font-size: 32px; font-weight: 800; margin-bottom: 10px;"></h1>
-    <p id="endSubtitle" style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px;"></p>
-    <button class="btn btn-submit" onclick="location.reload()">Reia Chestionarul</button>
-  </div>
-
-  <!-- ÎNCĂRCAREA BAZEI DE DATE DIN FIȘIERUL SEPARAT -->
-  <script src="questions.js"></script>
-
-  <!-- LOGICA APLICAȚIEI -->
-  <script>
-    let activeQuestions = [];
-    let currentIndex = 0;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let userSelections = new Set();
-    let secondsLeft = 30 * 60;
-    let timerRef = null;
-
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function startTest() {
-      // Verificare de siguranță pentru încărcarea questions.js
-      if (!window.questionsData || !Array.isArray(window.questionsData) || window.questionsData.length === 0) {
-        alert("Eroare: Fișierul questions.js nu a fost găsit sau este gol. Verifică depozitul GitHub!");
-        return;
-      }
-
-      try {
-        const shuffled = shuffleArray(window.questionsData);
-        activeQuestions = shuffled.slice(0, 26);
-
-        currentIndex = 0;
-        correctCount = 0;
-        wrongCount = 0;
-        secondsLeft = 30 * 60;
-
-        document.getElementById('lblCorrect').textContent = '0';
-        document.getElementById('lblWrong').textContent = '0';
-        document.getElementById('lblTotal').textContent = activeQuestions.length;
-
-        document.getElementById('startScreen').classList.remove('active');
-        document.getElementById('quizScreen').classList.add('active');
-        
-        renderQuestion();
-        if (timerRef) clearInterval(timerRef);
-        timerRef = setInterval(updateTimer, 1000);
-      } catch (err) {
-        alert("A apărut o problemă: " + err.message);
-      }
-    }
-
-    function updateTimer() {
-      secondsLeft--;
-      const min = Math.floor(secondsLeft / 60);
-      const sec = secondsLeft % 60;
-      document.getElementById('lblTimer').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
-      if (secondsLeft <= 0) finalize(false, "Timpul de 30 de minute a expirat.");
-    }
-
-    function renderQuestion() {
-      userSelections.clear();
-      document.getElementById('boxExplanation').style.display = 'none';
-
-      const progress = ((currentIndex + 1) / activeQuestions.length) * 100;
-      document.getElementById('progressFill').style.width = `${progress}%`;
-
-      const btn = document.getElementById('btnAction');
-      btn.textContent = "Trimite Răspunsul";
-      btn.onclick = validateCurrentAnswer;
-
-      const q = activeQuestions[currentIndex];
-      document.getElementById('lblIndex').textContent = currentIndex + 1;
-      document.getElementById('lblQuestionText').textContent = q.question;
-
-      const imgContainer = document.getElementById('imgContainer');
-      const qImage = document.getElementById('qImage');
-      if (q.image) {
-        qImage.src = q.image;
-        imgContainer.style.display = 'block';
-      } else {
-        imgContainer.style.display = 'none';
-        qImage.src = '';
-      }
-
-      const container = document.getElementById('containerOptions');
-      container.innerHTML = '';
-
-      q.options.forEach(opt => {
-        const item = document.createElement('div');
-        item.className = 'opt-card';
-        item.innerHTML = `<span class="opt-tag">${opt.id}</span><span>${opt.text}</span>`;
-        item.onclick = () => {
-          if (userSelections.has(opt.id)) {
-            userSelections.delete(opt.id);
-            item.classList.remove('selected');
-          } else {
-            userSelections.add(opt.id);
-            item.classList.add('selected');
-          }
-        };
-        container.appendChild(item);
-      });
-    }
-
-    function validateCurrentAnswer() {
-      const q = activeQuestions[currentIndex];
-      const selectedArr = Array.from(userSelections).sort();
-      const correctArr = [...q.correct].sort();
-
-      const isMatch = JSON.stringify(selectedArr) === JSON.stringify(correctArr);
-
-      if (isMatch) {
-        correctCount++;
-        document.getElementById('lblCorrect').textContent = correctCount;
-        advance();
-      } else {
-        wrongCount++;
-        document.getElementById('lblWrong').textContent = wrongCount;
-
-        const box = document.getElementById('boxExplanation');
-        box.style.display = 'block';
-        box.innerHTML = `<strong>Răspuns incorect!</strong> Variante corecte: <b>${correctArr.join(', ')}</b><br><br>${q.article}`;
-
-        if (wrongCount >= 5) {
-          finalize(false, "Ai acumulat 5 răspunsuri greșite. Examen picat.");
-          return;
-        }
-
-        const btn = document.getElementById('btnAction');
-        btn.textContent = "Continuă la următoarea";
-        btn.onclick = advance;
-      }
-    }
-
-    function advance() {
-      currentIndex++;
-      if (currentIndex >= activeQuestions.length) {
-        finalize(correctCount >= 22, `Ai obținut ${correctCount} puncte din ${activeQuestions.length}.`);
-      } else {
-        renderQuestion();
-      }
-    }
-
-    function finalize(isPassed, details) {
-      clearInterval(timerRef);
-      document.getElementById('quizScreen').classList.remove('active');
-      document.getElementById('endScreen').classList.add('active');
-
-      const title = document.getElementById('endTitle');
-      title.textContent = isPassed ? "ADMIS 🎉" : "RESPINS ❌";
-      title.style.color = isPassed ? "#34d399" : "#f87171";
-      document.getElementById('endSubtitle').textContent = details;
-    }
-  </script>
-</body>
-</html>
