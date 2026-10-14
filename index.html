@@ -260,7 +260,7 @@
       margin-bottom: 8px;
     }
 
-    /* Container dedicat banner AdMob (standard mobil 320x50) */
+    /* Slot banner AdMob 50px */
     .admob-banner-container {
       width: 100%;
       min-height: 50px;
@@ -297,10 +297,9 @@
       </div>
       <h1 class="hero-title">AutoPass B</h1>
       <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 28px;">Simulare 1 la 1 a examenului oficial DRPCIV / DGPCI.</p>
-      <button class="btn btn-submit" id="btnStart">Începe Chestionarul</button>
+      <button class="btn btn-submit" id="btnStart" onclick="window.initTest && window.initTest()">Începe Chestionarul</button>
     </div>
 
-    <!-- Slot reclamă Start -->
     <div class="admob-banner-container" id="admob-start-slot">
       <span class="admob-placeholder">Spațiu Reclamă AdMob</span>
     </div>
@@ -339,4 +338,31 @@
         </div>
       </div>
 
-      <div class="options
+      <div class="options-group" id="containerOptions"></div>
+      <div id="boxExplanation" class="expl-box"></div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="action-row" id="secondaryActions">
+        <button class="btn btn-clear" id="btnClear" onclick="window.clearSelection && window.clearSelection()">Șterge răspunsul</button>
+        <button class="btn btn-defer" id="btnDefer" onclick="window.deferQuestion && window.deferQuestion()">Răspunde mai târziu</button>
+      </div>
+      <button class="btn btn-submit" id="btnAction" onclick="window.validateCurrentAnswer && window.validateCurrentAnswer()">Trimite Răspunsul</button>
+    </div>
+  </div>
+
+  <!-- ECRAN 3: REZULTAT FINAL -->
+  <div id="endScreen" class="screen" style="justify-content: space-between; text-align: center; padding: 24px 16px env(safe-area-inset-bottom, 16px);">
+    <div style="margin: auto 0;">
+      <h1 id="endTitle" style="font-size: 32px; font-weight: 800; margin-bottom: 10px;"></h1>
+      <p id="endSubtitle" style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px;"></p>
+      <button class="btn btn-submit" id="btnRestart" onclick="location.reload()">Reia Chestionarul</button>
+    </div>
+
+    <div class="admob-banner-container" id="admob-end-slot">
+      <span class="admob-placeholder">Spațiu Reclamă AdMob</span>
+    </div>
+  </div>
+
+</body>
+</html>
