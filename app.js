@@ -7,6 +7,18 @@ let userSelections = new Set();
 let secondsLeft = 30 * 60;
 let timerRef = null;
 
+// Modul suport reclame (gestionează ascunderea în timpul examenului și afișarea la final)
+const AdManager = {
+  onTestStart() {
+    // În timpul examenului nu afișăm reclame pentru a nu distrage candidatul
+    console.log("[AdMob] Examen pornit - banner ascuns.");
+  },
+  onTestEnd() {
+    // La finalul examenului se poate apela reclama nativă AdMob
+    console.log("[AdMob] Examen încheiat - banner activat pe ecranul de rezultat.");
+  }
+};
+
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -23,6 +35,8 @@ function initTest() {
     alert("Eroare: Fișierul questions.js nu conține date sau nu a fost găsit!");
     return;
   }
+
+  AdManager.onTestStart();
 
   activeQuestions = shuffleArray(source).slice(0, 26);
   initialTotal = activeQuestions.length;
@@ -166,6 +180,8 @@ function finalize(isPassed, details) {
   clearInterval(timerRef);
   document.getElementById('quizScreen').classList.remove('active');
   document.getElementById('endScreen').classList.add('active');
+
+  AdManager.onTestEnd();
 
   const title = document.getElementById('endTitle');
   title.textContent = isPassed ? "ADMIS 🎉" : "RESPINS ❌";
