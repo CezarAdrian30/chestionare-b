@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Chestionare B Offline</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #0b1329; color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+    
+    .screen { display: none; flex-direction: column; height: 100%; padding: 16px; }
+    .screen.active { display: flex; }
+
+    /* Panou bord examen */
+    .dashboard { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #334155; }
+    .stat { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+    .stat-green { background: #064e3b; color: #34d399; }
+    .stat-red { background: #7f1d1d; color: #f87171; }
+    .stat-timer { background: #1e3a8a; color: #60a5fa; font-variant-numeric: tabular-nums; }
+
+    /* Caseta întrebării */
+    .card-question { background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 12px; }
+    .q-number { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.5px; }
+    .q-text { font-size: 15px; font-weight: 600; line-height: 1.45; color: #f1f5f9; margin-top: 6px; }
+
+    /* Opțiuni */
+    .options-group { display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; padding-bottom: 8px; }
+    .opt-card { background: #172554; border: 2px solid #1e3a8a; border-radius: 10px; padding: 14px; font-size: 14px; line-height: 1.4; color: #e2e8f0; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .opt-card.selected { background: #1d4ed8; border-color: #60a5fa; color: #fff; font-weight: 500; }
+    .opt-tag { font-weight: 800; font-size: 13px; background: rgba(255,255,255,0.12); padding: 5px 9px; border-radius: 6px; }
+
+    /* Caseta explicație legislație rutieră */
+    .expl-box { background: #022c22; border: 1px solid #059669; border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.45; color: #a7f3d0; display: none; }
+
+    /* Butoane */
+    .bottom-bar { display: flex; gap: 10px; margin-top: auto; padding-top: 8px; }
+    .btn { flex: 1; padding: 15px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; }
+    .btn-submit { background: #2563eb; color: #fff; }
+    .btn-submit:active { background: #1d4ed8; }
+
+    /* Istoric / Rezumat final */
+    .final-score { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <!-- ECRAN 1: START -->
+  <div id="startScreen" class="screen active" style="justify-content: center; text-align: center;">
+    <h1 style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Permis Auto Cat. B</h1>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 28px;">Modul oficial de examinare offline (26 întrebări, max. 4 greșeli permise).</p>
+    <button class="btn btn-submit" onclick="startTest()">Începe Chestionarul</button>
+  </div>
+
+  <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
+  <div id="quizScreen" class="screen">
+    <div class="dashboard">
+      <div class="stat stat-green">Corecte: <span id="lblCorrect">0</span></div>
+      <div class="stat stat-red">Greșite: <span id="lblWrong">0</span>/5</div>
+      <div class="stat stat-timer" id="lblTimer">30:00</div>
+    </div>
+
+    <div class="card-question">
+      <div class="q-number">Întrebarea <span id="lblIndex">1</span> / 26</div>
+      <div class="q-text" id="lblQuestionText"></div>
+    </div>
+
+    <div class="options-group" id="containerOptions"></div>
+
+    <div id="boxExplanation" class="expl-box"></div>
+
+    <div class="bottom-bar">
+      <button class="btn btn-submit" id="btnAction" onclick="validateCurrentAnswer()">Trimite Răspunsul</button>
+    </div>
+  </div>
+
+  <!-- ECRAN 3: REZULTAT FINAL -->
+  <div id="endScreen" class="screen" style="justify-content: center; text-align: center;">
+    <div id="endTitle" class="final-score"></div>
+    <p id="endSubtitle" style="color: #94a3b8; font-size: 15px; margin-bottom: 24px;"></p>
+    <button class="btn btn-submit" onclick="location.reload()">Reia Chestionarul</button>
+  </div>
+
+  <script>
+    // Bază de date locală (offline) - poate fi extinsă cu sute de întrebări
+    const localDatabase = [
+      {
+        question: "În care dintre următoarele situații este interzisă depășirea vehiculelor pe drumurile publice?",
+        options: [
+          { id: "A", text: "În intersecțiile cu circulație nedirijată." },
+          { id: "B", text: "Pe sectoarele de drum unde vizibilitatea este sub 50 m." },
+          { id: "C", text: "La trecerile pentru pietoni semnalizate." }
+        ],
+        correct: ["A", "B", "C"],
+        article: "Art. 120 Regulament: Depășirea este interzisă în intersecții nedirijate, pe trecerile de pietoni semnalizate și în curbe/locuri unde vizibilitatea este redusă sub 50 m."
+      },
+      {
+        question: "Cum procedați la apropierea de o trecere la nivel cu o cale ferată industrială fără bariere?",
+        options: [
+          { id: "A", text: "Opriți obligatoriu autovehiculul înainte de indicator." },
+          { id: "B", text: "Reduceți viteza și vă asigurați că nu circulă niciun vehicul feroviar." },
+          { id: "C", text: "Măriți viteza pentru a elibera cât mai repede zona de traversare." }
+        ],
+        correct: ["B"],
+        article: "Art. 138 Regulament: La trecerea la nivel cu o cale ferată industrială, conducătorul este obligat doar să reducă viteza și să se asigure că nu se apropie niciun vehicul feroviar."
+      },
+      {
+        question: "Care este viteza maximă legală admisă în localități pentru categoria B?",
+        options: [
+          { id: "A", text: "40 km/h." },
+          { id: "B", text: "50 km/h (sau până la 80 km/h pe tronsoane stabilite special de administrator)." },
+          { id: "C", text: "70 km/h în mod general." }
+        ],
+        correct: ["B"],
+        article: "Art. 49 OUG 195/2002: Limita maximă de viteză în localități este de 50 km/h. Pe anumite sectoare, administratorul poate crește limita până la maximum 80 km/h."
+      },
+      {
+        question: "Ce obligații aveți la semnalul polițistului orientat cu brațul stâng întins orizontal?",
+        options: [
+          { id: "A", text: "Oprire pentru vehiculele care vin din fața polițistului." },
+          { id: "B", text: "Oprire pentru vehiculele care vin din spatele polițistului." },
+          { id: "C", text: "Semnalul înseamnă 'Oprire' pentru vehiculele care vin din fața sa." }
+        ],
+        correct: ["B"],
+        article: "Art. 88 Regulament: Brațul stâng întins orizontal al polițistului semnifică 'Oprire' pentru vehiculele și pietonii care vin din spatele acestuia."
+      }
+    ];
+
+    let currentIndex = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let userSelections = new Set();
+    let secondsLeft = 30 * 60;
+    let timerRef = null;
+
+    function startTest() {
+      document.getElementById('startScreen').classList.remove('active');
+      document.getElementById('quizScreen').classList.add('active');
+      renderQuestion();
+      timerRef = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      secondsLeft--;
+      const min = Math.floor(secondsLeft / 60);
+      const sec = secondsLeft % 60;
+      document.getElementById('lblTimer').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+      if (secondsLeft <= 0) finalize(false, "Timpul de 30 de minute a expirat.");
+    }
+
+    function renderQuestion() {
+      userSelections.clear();
+      document.getElementById('boxExplanation').style.display = 'none';
+
+      const btn = document.getElementById('btnAction');
+      btn.textContent = "Trimite Răspunsul";
+      btn.onclick = validateCurrentAnswer;
+
+      const q = localDatabase[currentIndex];
+      document.getElementById('lblIndex').textContent = currentIndex + 1;
+      document.getElementById('lblQuestionText').textContent = q.question;
+
+      const container = document.getElementById('containerOptions');
+      container.innerHTML = '';
+
+      q.options.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'opt-card';
+        item.innerHTML = `<span class="opt-tag">${opt.id}</span><span>${opt.text}</span>`;
+        item.onclick = () => {
+          if (userSelections.has(opt.id)) {
+            userSelections.delete(opt.id);
+            item.classList.remove('selected');
+          } else {
+            userSelections.add(opt.id);
+            item.classList.add('selected');
+          }
+        };
+        container.appendChild(item);
+      });
+    }
+
+    function validateCurrentAnswer() {
+      const q = localDatabase[currentIndex];
+      const selectedArr = Array.from(userSelections).sort();
+      const correctArr = [...q.correct].sort();
+
+      const isMatch = JSON.stringify(selectedArr) === JSON.stringify(correctArr);
+
+      if (isMatch) {
+        correctCount++;
+        document.getElementById('lblCorrect').textContent = correctCount;
+        advance();
+      } else {
+        wrongCount++;
+        document.getElementById('lblWrong').textContent = wrongCount;
+
+        const box = document.getElementById('boxExplanation');
+        box.style.display = 'block';
+        box.innerHTML = `<strong>Răspuns greșit!</strong> Variante corecte: <b>${correctArr.join(', ')}</b><br><br>${q.article}`;
+
+        if (wrongCount >= 5) {
+          finalize(false, "Ai acumulat 5 răspunsuri greșite. Examen picat.");
+          return;
+        }
+
+        const btn = document.getElementById('btnAction');
+        btn.textContent = "Am înțeles, mergi mai departe";
+        btn.onclick = advance;
+      }
+    }
+
+    function advance() {
+      currentIndex++;
+      if (currentIndex >= localDatabase.length) {
+        finalize(correctCount >= 22, `Ai obținut ${correctCount} puncte din 26.`);
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function finalize(isPassed, details) {
+      clearInterval(timerRef);
+      document.getElementById('quizScreen').classList.remove('active');
+      document.getElementById('endScreen').classList.add('active');
+
+      const title = document.getElementById('endTitle');
+      title.textContent = isPassed ? "ADMIS 🎉" : "RESPINS ❌";
+      title.style.color = isPassed ? "#34d399" : "#f87171";
+      document.getElementById('endSubtitle').textContent = details;
+    }
+  </script>
+</body>
+</html>
