@@ -6,16 +6,48 @@
   <title>AutoPass B • DRPCIV Simulator</title>
 
   <style>
+    /* TEMĂ ÎNTUNECATĂ (DARK MODE) */
     :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #172554 0%, #060913 75%);
       --bg-main: #060913;
       --surface: rgba(17, 24, 39, 0.75);
       --surface-border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --sheet-bg: #0f172a;
+      --overlay-bg: rgba(6, 9, 19, 0.8);
       --primary: #3b82f6;
       --primary-glow: rgba(59, 130, 246, 0.35);
       --drpciv-orange: #d97706;
       --drpciv-orange-glow: rgba(217, 119, 6, 0.4);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --pill-bg: rgba(255, 255, 255, 0.06);
+      --item-active-bg: rgba(255, 255, 255, 0.04);
+      --modal-border: rgba(255, 255, 255, 0.08);
+      --nav-bg: rgba(15, 23, 42, 0.9);
+    }
+
+    /* TEMĂ LUMINOASĂ (LIGHT MODE - IMPLICITĂ) */
+    body.light-theme {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #dbeafe 0%, #f1f5f9 80%);
+      --bg-main: #f8fafc;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-border: rgba(203, 213, 225, 0.8);
+      --card-bg: #ffffff;
+      --card-border: rgba(203, 213, 225, 0.9);
+      --sheet-bg: #ffffff;
+      --overlay-bg: rgba(15, 23, 42, 0.45);
+      --primary: #2563eb;
+      --primary-glow: rgba(37, 99, 235, 0.25);
+      --drpciv-orange: #d97706;
+      --drpciv-orange-glow: rgba(217, 119, 6, 0.3);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --pill-bg: rgba(0, 0, 0, 0.05);
+      --item-active-bg: rgba(0, 0, 0, 0.03);
+      --modal-border: rgba(0, 0, 0, 0.1);
+      --nav-bg: rgba(255, 255, 255, 0.92);
     }
 
     * { 
@@ -28,9 +60,10 @@
     
     html, body {
       height: 100%;
-      background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg-main) 75%);
+      background: var(--bg-gradient);
       color: var(--text-main);
       overflow: hidden;
+      transition: background 0.25s ease, color 0.25s ease;
     }
 
     .screen {
@@ -42,7 +75,129 @@
     }
     .screen.active { display: flex; }
 
-    /* Dashboard examen */
+    /* LOGO VECTORIAL */
+    .brand-logo-wrapper {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .brand-logo-glow {
+      position: absolute;
+      inset: -4px;
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      border-radius: 22px;
+      opacity: 0.35;
+      filter: blur(10px);
+      z-index: 1;
+    }
+    .brand-logo-badge {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #1d4ed8, #0f172a);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+      z-index: 2;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    .btn-icon {
+      background: var(--pill-bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-icon:active {
+      transform: scale(0.92);
+      color: var(--text-main);
+    }
+
+    /* CARD STATISTICI */
+    .stats-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      text-align: left;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .stats-item {
+      background: var(--item-active-bg);
+      padding: 6px 4px;
+      border-radius: 10px;
+      border: 1px solid var(--surface-border);
+    }
+    .stats-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .stats-lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* CARD CAIET DE GREȘELI */
+    .mistakes-card {
+      background: var(--surface);
+      border: 1.5px dashed var(--drpciv-orange);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+    }
+    .mistakes-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mistakes-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(217, 119, 6, 0.15);
+      color: var(--drpciv-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
     .dashboard {
       display: flex;
       justify-content: space-between;
@@ -56,6 +211,7 @@
       border: 1px solid var(--surface-border);
       flex-shrink: 0;
       gap: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .stat-pill {
@@ -67,10 +223,9 @@
       padding: 5px 10px;
       border-radius: 20px;
     }
-    .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
-    .pill-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .pill-green { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .pill-red { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.25); }
     
-    /* Cronometru + Buton Pauză integrat */
     .timer-container {
       display: flex;
       align-items: center;
@@ -81,15 +236,15 @@
       border-radius: 20px;
     }
     .pill-timer {
-      color: #60a5fa;
+      color: var(--primary);
       font-variant-numeric: tabular-nums;
       font-size: 13px;
       font-weight: 700;
     }
     .btn-pause-inline {
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--pill-bg);
       border: none;
-      color: #fff;
+      color: var(--text-main);
       width: 26px;
       height: 26px;
       border-radius: 50%;
@@ -98,10 +253,6 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.15s ease;
-    }
-    .btn-pause-inline:active {
-      transform: scale(0.9);
-      background: rgba(255, 255, 255, 0.25);
     }
 
     .sub-dashboard {
@@ -117,7 +268,7 @@
 
     .progress-bar {
       height: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(148, 163, 184, 0.25);
       border-radius: 4px;
       margin-bottom: 12px;
       overflow: hidden;
@@ -134,10 +285,8 @@
       flex: 1;
       overflow-y: auto;
       padding-bottom: 12px;
-      transition: filter 0.3s ease;
     }
 
-    /* Card întrebare */
     .card-question {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -146,12 +295,13 @@
       border-radius: 16px;
       border: 1px solid var(--surface-border);
       margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
     }
     .q-badge {
       display: inline-block;
       font-size: 11px;
       text-transform: uppercase;
-      color: #60a5fa;
+      color: var(--primary);
       font-weight: 800;
       background: rgba(59, 130, 246, 0.12);
       padding: 4px 8px;
@@ -162,14 +312,14 @@
       font-size: 15px;
       font-weight: 600;
       line-height: 1.45;
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     .q-image-container {
       margin-top: 12px;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
       display: none;
       background: #000;
       text-align: center;
@@ -188,18 +338,19 @@
       gap: 10px;
     }
     .opt-card {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
       border-radius: 14px;
       padding: 12px 14px;
       font-size: 14px;
       line-height: 1.4;
-      color: #cbd5e1;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
       transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
     .opt-card:active {
       transform: scale(0.98);
@@ -214,8 +365,8 @@
     .opt-tag {
       font-weight: 800;
       font-size: 13px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      background: var(--pill-bg);
+      color: var(--text-main);
       padding: 5px 9px;
       border-radius: 8px;
       flex-shrink: 0;
@@ -226,16 +377,20 @@
     }
 
     .expl-box {
-      background: rgba(6, 78, 59, 0.5);
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      background: rgba(6, 78, 59, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
       backdrop-filter: blur(12px);
       border-radius: 14px;
       padding: 14px;
       margin-top: 12px;
       font-size: 13px;
       line-height: 1.45;
-      color: #a7f3d0;
+      color: #047857;
       display: none;
+    }
+    body:not(.light-theme) .expl-box {
+      background: rgba(6, 78, 59, 0.5);
+      color: #a7f3d0;
     }
 
     .bottom-bar {
@@ -267,37 +422,51 @@
     .btn:active {
       transform: scale(0.98);
     }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
     .btn-submit {
       background: linear-gradient(135deg, #16a34a, #15803d);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
       font-size: 16px;
-      padding: 15px;
+      padding: 14px;
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--drpciv-orange-glow);
     }
 
     .btn-clear {
-      background: rgba(51, 65, 85, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e2e8f0;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
     }
 
     .btn-defer {
-      background: rgba(30, 58, 138, 0.5);
+      background: rgba(59, 130, 246, 0.12);
       border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
+      color: var(--primary);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
     .hero-title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      color: var(--text-main);
+      margin-bottom: 2px;
+      letter-spacing: -0.3px;
     }
 
-    /* Container banner AdMob 50px */
     .admob-banner-container {
       width: 100%;
       min-height: 50px;
@@ -305,26 +474,37 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px dashed rgba(255, 255, 255, 0.12);
+      background: var(--item-active-bg);
+      border: 1px dashed var(--surface-border);
       border-radius: 10px;
       flex-shrink: 0;
-      margin-top: auto;
+      margin-top: 10px;
+    }
+
+    .admob-pause-slot {
+      width: 100%;
+      min-height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--item-active-bg);
+      border: 1px dashed var(--surface-border);
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
 
     .admob-placeholder {
       font-size: 11px;
-      color: #64748b;
+      color: var(--text-muted);
       letter-spacing: 0.6px;
       text-transform: uppercase;
       font-weight: 700;
     }
 
-    /* ECRAN PAUZĂ OVERLAY (BLUR 2026) */
     .pause-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(6, 9, 19, 0.75);
+      background: var(--overlay-bg);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       z-index: 100;
@@ -332,9 +512,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 24px 16px;
       text-align: center;
-      animation: fadeIn 0.2s ease;
     }
     .pause-overlay.active {
       display: flex;
@@ -342,52 +521,544 @@
     .pause-card {
       background: var(--surface);
       border: 1px solid var(--surface-border);
-      padding: 24px;
+      padding: 22px 18px;
       border-radius: 20px;
       max-width: 320px;
       width: 100%;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.3);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .pause-quick-settings {
+      background: var(--item-active-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .btn-abort-test {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 14px;
+      padding: 6px;
+      display: inline-block;
+    }
+
+    /* MODAL SETĂRI */
+    .settings-modal {
+      position: absolute;
+      inset: 0;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 110;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .settings-modal.active {
+      display: flex;
+    }
+    .settings-sheet {
+      background: var(--sheet-bg);
+      border: 1px solid var(--modal-border);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 18px env(safe-area-inset-bottom, 24px);
+      width: 100%;
+      max-height: 85%;
+      overflow-y: auto;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
+    }
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--modal-border);
+    }
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .settings-item {
+      background: var(--item-active-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #94a3b8;
+      transition: 0.25s ease;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s ease;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #10b981; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* BARA DE NAVIGARE DE JOS (BOTTOM NAVIGATION BAR) */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(56px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 90;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+    }
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      cursor: pointer;
+      flex: 1;
+      height: 100%;
+      border: none;
+      background: transparent;
+      transition: color 0.15s ease;
+    }
+    .nav-tab svg { width: 22px; height: 22px; stroke-width: 2.2; }
+    .nav-tab span { font-size: 11px; font-weight: 600; }
+    .nav-tab.active {
+      color: var(--primary);
+    }
+    .nav-tab.active span { font-weight: 800; }
+
+    /* CONȚINUTUL TAB-URILOR DIN ECRANUL PRINCIPAL */
+    .tab-view {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    }
+    .tab-view.active { display: flex; }
+
+    /* STILURI PENTRU TAB 2 (INDICATOARE) */
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+    .filter-pill {
+      white-space: nowrap;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .filter-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .signs-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .sign-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-align: left;
+    }
+    .sign-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    /* STILURI PENTRU TAB 3 (GHID & SINTEZĂ) */
+    .cheat-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .cheat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .cheat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--surface-border);
+      font-size: 13px;
+    }
+    .cheat-row:last-child { border-bottom: none; }
+    .cheat-tag {
+      font-weight: 800;
+      color: var(--text-main);
+      background: var(--item-active-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
     }
   </style>
 
   <script src="questions.js" defer></script>
   <script src="app.js" defer></script>
 </head>
-<body>
+<body class="light-theme">
 
-  <!-- ECRAN 1: START -->
-  <div id="startScreen" class="screen active" style="justify-content: space-between; text-align: center; padding: 24px 16px env(safe-area-inset-bottom, 16px);">
-    <div style="margin: auto 0;">
-      <div style="width: 60px; height: 60px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 6px 20px var(--primary-glow);">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 11l2-6h10l2 6"/></svg>
+  <!-- ECRAN 1: START CU BARA INFERIOARĂ DE NAVIGARE -->
+  <div id="startScreen" class="screen active" style="padding: 12px 16px 0;">
+
+    <!-- TAB 1: CHESTIONARE (ECRANUL CURENT) -->
+    <div id="tabViewQuizzes" class="tab-view active">
+      <div>
+        <div class="top-nav">
+          <button class="btn-icon" id="btnOpenSettings" onclick="window.toggleSettings && window.toggleSettings(true)" title="Setări">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+
+        <div class="brand-logo-wrapper">
+          <div class="brand-logo-glow"></div>
+          <div class="brand-logo-badge">
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="26" stroke="url(#logoGrad)" stroke-width="4.5" stroke-dasharray="140 24"/>
+              <circle cx="32" cy="32" r="8" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+              <line x1="8" y1="32" x2="24" y2="32" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+              <line x1="40" y1="32" x2="56" y2="32" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+              <line x1="32" y1="40" x2="32" y2="56" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+              <path d="M26 18L32 12L38 18" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="logoGrad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#38bdf8"/>
+                  <stop offset="0.5" stop-color="#60a5fa"/>
+                  <stop offset="1" stop-color="#2563eb"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <h1 class="hero-title">AutoPass B</h1>
+        <p style="color: var(--text-muted); font-size: 13px;">Simulator Examen DRPCIV / DGPCI</p>
+
+        <!-- STATISTICI GENERALE -->
+        <div class="stats-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Progresul Tău</span>
+            <span id="lblPassRate" style="font-size: 12px; font-weight: 800; color: #10b981;">0% Admis</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stats-item">
+              <div class="stats-val" id="statTotalTests">0</div>
+              <div class="stats-lbl">Total Teste</div>
+            </div>
+            <div class="stats-item">
+              <div class="stats-val" style="color: #10b981;" id="statPassedTests">0</div>
+              <div class="stats-lbl">Admise</div>
+            </div>
+            <div class="stats-item">
+              <div class="stats-val" style="color: #ef4444;" id="statFailedTests">0</div>
+              <div class="stats-lbl">Respinse</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD CAIETUL DE GREȘELI -->
+        <div class="mistakes-card">
+          <div class="mistakes-info">
+            <div class="mistakes-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="m9 9.5 6 6"/><path d="m15 9.5-6 6"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">Caiet de Greșeli</div>
+              <div id="lblMistakesCount" style="font-size: 12px; color: var(--text-muted);">0 întrebări de recuperat</div>
+            </div>
+          </div>
+          <button class="btn btn-orange" id="btnStartMistakes" style="width: auto; padding: 8px 12px; font-size: 12px;" onclick="window.initMistakesTest && window.initMistakesTest()">Repetă</button>
+        </div>
+
+        <button class="btn btn-submit" id="btnStart" onclick="window.initTest && window.initTest()">Începe Examen Normal (26 Întrebări)</button>
       </div>
-      <h1 class="hero-title">AutoPass B</h1>
-      <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 28px;">Simulare 1 la 1 a examenului oficial DRPCIV / DGPCI.</p>
-      <button class="btn btn-submit" id="btnStart" onclick="window.initTest && window.initTest()">Începe Chestionarul</button>
+
+      <div class="admob-banner-container" id="admob-start-slot">
+        <span class="admob-placeholder">Spațiu Reclamă AdMob</span>
+      </div>
     </div>
 
-    <div class="admob-banner-container" id="admob-start-slot">
-      <span class="admob-placeholder">Spațiu Reclamă AdMob</span>
+    <!-- TAB 2: INDICATOARE RUTIERE (GHID VIZUAL) -->
+    <div id="tabViewSigns" class="tab-view">
+      <div style="padding-top: 6px;">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px; text-align: left;">Indicatoare Rutiere</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 14px; text-align: left;">Ghid esențial cu semnele și capcanele din examen</p>
+
+        <!-- Filtru categorii semne -->
+        <div class="filter-pills" id="signsFilterPills">
+          <button class="filter-pill active" onclick="window.filterSigns && window.filterSigns('toate', this)">Toate</button>
+          <button class="filter-pill" onclick="window.filterSigns && window.filterSigns('prioritate', this)">Prioritate</button>
+          <button class="filter-pill" onclick="window.filterSigns && window.filterSigns('avertizare', this)">Avertizare</button>
+          <button class="filter-pill" onclick="window.filterSigns && window.filterSigns('interzicere', this)">Interzicere</button>
+        </div>
+
+        <div class="signs-grid" id="containerSigns">
+          <!-- Cardurile de semne rutiere se generează dinamic prin script -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: GHID EXAMEN (SINTEZĂ & CIFRE CHEIE) -->
+    <div id="tabViewGuide" class="tab-view">
+      <div style="padding-top: 6px;">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px; text-align: left;">Ghid Examen DRPCIV</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 14px; text-align: left;">Cifrele și regulile care pică garantat la sală</p>
+
+        <!-- Viteze Maxime Admise -->
+        <div class="cheat-card">
+          <div class="cheat-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>Viteze Maxime (Categoria B)</span>
+          </div>
+          <div class="cheat-row"><span>În Localități</span><span class="cheat-tag">50 km/h</span></div>
+          <div class="cheat-row"><span>Drum European (E) / Expres (DEx)</span><span class="cheat-tag">100 / 120 km/h</span></div>
+          <div class="cheat-row"><span>Autostrăzi (A)</span><span class="cheat-tag">130 km/h</span></div>
+          <div class="cheat-row"><span>Alte drumuri (Județene/Comunale)</span><span class="cheat-tag">90 km/h</span></div>
+          <div class="cheat-row" style="color: #d97706; font-weight: 600;"><span>Șoferi Începători (anul 1)</span><span class="cheat-tag">-20 km/h</span></div>
+        </div>
+
+        <!-- Distanțe Legale Obligatorii -->
+        <div class="cheat-card">
+          <div class="cheat-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12h20"/><path d="m18 8 4 4-4 4"/><path d="m6 16-4-4 4-4"/></svg>
+            <span>Distanțe Legale Cheie</span>
+          </div>
+          <div class="cheat-row"><span>Oprirea înainte/după trecerea pietoni</span><span class="cheat-tag">Min. 25 m</span></div>
+          <div class="cheat-row"><span>Semnalizarea schimbării direcției (oraș)</span><span class="cheat-tag">Min. 50 m</span></div>
+          <div class="cheat-row"><span>Semnalizarea în afara localității</span><span class="cheat-tag">Min. 100 m</span></div>
+          <div class="cheat-row"><span>Oprirea față de calea ferată curentă</span><span class="cheat-tag">Min. 50 m</span></div>
+          <div class="cheat-row"><span>Staționarea față de stația de tramvai</span><span class="cheat-tag">Min. 25 m</span></div>
+        </div>
+
+        <!-- Alcool și Încadrare Legală -->
+        <div class="cheat-card">
+          <div class="cheat-header" style="color: #ef4444;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <span>Alcool & Sancțiuni</span>
+          </div>
+          <div class="cheat-row"><span>0.01 - 0.40 mg/l aer expirat</span><span class="cheat-tag" style="color:#d97706;">Contravenție (Amandă+Suspendare)</span></div>
+          <div class="cheat-row"><span>Peste 0.40 mg/l aer expirat</span><span class="cheat-tag" style="color:#ef4444;">Infracțiune (Dosar Penal)</span></div>
+          <div class="cheat-row"><span>Peste 0.80 g/l alcool pur în sânge</span><span class="cheat-tag" style="color:#ef4444;">Infracțiune (Dosar Penal)</span></div>
+        </div>
+
+        <!-- Măsuri de Prim Ajutor -->
+        <div class="cheat-card">
+          <div class="cheat-header" style="color: #10b981;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20"/><path d="M2 12h20"/></svg>
+            <span>Măsuri de Prim Ajutor</span>
+          </div>
+          <div class="cheat-row"><span>Raport Compresii toracice : Ventilații</span><span class="cheat-tag">30 : 2</span></div>
+          <div class="cheat-row"><span>Victimă inconștientă dar respiră</span><span class="cheat-tag">Poziția laterală</span></div>
+          <div class="cheat-row"><span>Hemoragie arterială (sânge roșu deschis)</span><span class="cheat-tag">Garou deasupra rănii</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BARA DE NAVIGARE DE JOS (BOTTOM TABS) -->
+    <nav class="bottom-nav">
+      <button class="nav-tab active" id="tabBtnQuizzes" onclick="window.switchTab && window.switchTab('quizzes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 11l2-6h10l2 6"/></svg>
+        <span>Chestionare</span>
+      </button>
+
+      <button class="nav-tab" id="tabBtnSigns" onclick="window.switchTab && window.switchTab('signs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 22 22 22"/></svg>
+        <span>Indicatoare</span>
+      </button>
+
+      <button class="nav-tab" id="tabBtnGuide" onclick="window.switchTab && window.switchTab('guide')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+        <span>Ghid Examen</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL SETĂRI -->
+  <div id="settingsModal" class="settings-modal" onclick="window.toggleSettings && window.toggleSettings(false)">
+    <div class="settings-sheet" onclick="event.stopPropagation()">
+      <div class="settings-header">
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--text-main);">Setări Aplicație</h2>
+        <button class="btn-icon" onclick="window.toggleSettings && window.toggleSettings(false)">✕</button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Temă Luminoasă (Light Mode)</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Comută între tema deschisă și cea întunecată</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleTheme" onchange="window.ThemeManager && window.ThemeManager.setTheme(this.checked ? 'light' : 'dark')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Feedback Vibrații</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Vibrație tactilă la apăsare și eroare</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleVibration" onchange="window.HapticFeedback && window.HapticFeedback.setVibrationEnabled(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Golește Caietul de Greșeli</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Șterge lista cu întrebările greșite</div>
+          </div>
+          <button class="btn btn-clear" style="width: auto; padding: 8px 12px; font-size: 12px;" onclick="window.clearMistakesBook && window.clearMistakesBook()">Golește</button>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Statistici & Istoric</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Șterge progresul testelor</div>
+          </div>
+          <button class="btn btn-danger" style="width: auto; padding: 8px 12px; font-size: 12px;" onclick="window.resetStatistics && window.resetStatistics()">Resetează</button>
+        </div>
+
+        <div class="settings-item" style="cursor: pointer;" onclick="window.location.href='privacy-policy.html'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Politica de Confidențialitate</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Informații despre date și publicitate</div>
+            </div>
+          </div>
+          <span style="color: var(--text-muted); font-size: 16px;">›</span>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px;">
+        AutoPass B • Versiunea 1.7 (2026)
+      </div>
     </div>
   </div>
 
-  <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
+  <!-- ECRAN 2: EXAMEN / RECAPITULARE (BARA INFERIOARĂ DISPARE PENTRU CONCENTRARE) -->
   <div id="quizScreen" class="screen">
     
-    <!-- OVERLAY PAUZĂ -->
     <div id="pauseOverlay" class="pause-overlay" onclick="window.togglePause && window.togglePause()">
       <div class="pause-card" onclick="event.stopPropagation()">
-        <div style="width: 52px; height: 52px; background: rgba(59,130,246,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><rect x="9" y="9" width="2" height="6"/><rect x="13" y="9" width="2" height="6"/></svg>
+        <div style="width: 44px; height: 44px; background: rgba(59,130,246,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><rect x="9" y="9" width="2" height="6"/><rect x="13" y="9" width="2" height="6"/></svg>
         </div>
-        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Examen în Pauză</h2>
-        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.45; margin-bottom: 20px;">Cronometrul este oprit, iar întrebarea este protejată.</p>
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text-main);">Examen în Pauză</h2>
+        <p style="color: var(--text-muted); font-size: 12px; line-height: 1.4; margin-bottom: 12px;">Cronometrul este oprit, iar întrebarea este protejată.</p>
+        
+        <div class="admob-pause-slot" id="admob-pause-banner">
+          <span class="admob-placeholder">Reclamă Sponsor</span>
+        </div>
+
+        <div class="pause-quick-settings">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">Temă Luminoasă</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="togglePauseTheme" onchange="window.ThemeManager && window.ThemeManager.setTheme(this.checked ? 'light' : 'dark')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="pause-quick-settings">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 8a6 6 0 0 0-9.33-5"/><path d="m2 2 20 20"/><path d="M6 15a6 6 0 0 0 8.66 2.66"/><circle cx="12" cy="12" r="1"/></svg>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">Vibrații</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="togglePauseVibration" onchange="window.HapticFeedback && window.HapticFeedback.setVibrationEnabled(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
         <button class="btn btn-submit" onclick="window.togglePause && window.togglePause()">Reia Testul</button>
+        
+        <div>
+          <button class="btn-abort-test" onclick="window.abortTest && window.abortTest()">Abandonează Examenul</button>
+        </div>
       </div>
     </div>
 
@@ -398,10 +1069,9 @@
       </div>
       <div class="stat-pill pill-red">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        <span id="lblWrong">0</span>/5
+        <span id="lblWrong">0</span><span id="lblWrongMax">/5</span>
       </div>
       
-      <!-- Cronometru + Buton Pauză -->
       <div class="timer-container">
         <span class="pill-timer" id="lblTimer">30:00</span>
         <button class="btn-pause-inline" id="btnPause" onclick="window.togglePause && window.togglePause()" title="Pauză / Reia">
@@ -411,8 +1081,8 @@
     </div>
 
     <div class="sub-dashboard">
-      <span>Întrebări rămase: <strong id="lblRemaining" style="color: #f8fafc;">0</strong></span>
-      <span>Amânate: <strong id="lblDeferredCount" style="color: #60a5fa;">0</strong></span>
+      <span>Întrebări rămase: <strong id="lblRemaining" style="color: var(--text-main);">0</strong></span>
+      <span>Amânate: <strong id="lblDeferredCount" style="color: var(--primary);">0</strong></span>
     </div>
 
     <div class="progress-bar">
@@ -421,7 +1091,7 @@
 
     <div class="scroll-content" id="quizContent">
       <div class="card-question">
-        <div class="q-badge">Întrebarea activă</div>
+        <div class="q-badge" id="lblQuizModeBadge">Întrebarea activă</div>
         <div class="q-text" id="lblQuestionText"></div>
         
         <div class="q-image-container" id="imgContainer">
@@ -447,7 +1117,7 @@
     <div style="margin: auto 0;">
       <h1 id="endTitle" style="font-size: 32px; font-weight: 800; margin-bottom: 10px;"></h1>
       <p id="endSubtitle" style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px;"></p>
-      <button class="btn btn-submit" id="btnRestart" onclick="location.reload()">Reia Chestionarul</button>
+      <button class="btn btn-submit" id="btnRestart" onclick="location.reload()">Înapoi la Meniu</button>
     </div>
 
     <div class="admob-banner-container" id="admob-end-slot">
