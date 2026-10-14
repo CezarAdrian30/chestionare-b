@@ -38,6 +38,7 @@
       flex-direction: column;
       height: 100%;
       padding: 16px;
+      position: relative;
     }
     .screen.active { display: flex; }
 
@@ -49,11 +50,12 @@
       background: var(--surface);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 14px;
       margin-bottom: 8px;
       border: 1px solid var(--surface-border);
       flex-shrink: 0;
+      gap: 6px;
     }
 
     .stat-pill {
@@ -67,7 +69,40 @@
     }
     .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
     .pill-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-    .pill-timer { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); font-variant-numeric: tabular-nums; }
+    
+    /* Cronometru + Buton Pauză integrat */
+    .timer-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 4px 10px 4px 12px;
+      border-radius: 20px;
+    }
+    .pill-timer {
+      color: #60a5fa;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .btn-pause-inline {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-pause-inline:active {
+      transform: scale(0.9);
+      background: rgba(255, 255, 255, 0.25);
+    }
 
     .sub-dashboard {
       display: flex;
@@ -99,8 +134,10 @@
       flex: 1;
       overflow-y: auto;
       padding-bottom: 12px;
+      transition: filter 0.3s ease;
     }
 
+    /* Card întrebare */
     .card-question {
       background: var(--surface);
       backdrop-filter: blur(16px);
@@ -260,7 +297,7 @@
       margin-bottom: 8px;
     }
 
-    /* Slot banner AdMob 50px */
+    /* Container banner AdMob 50px */
     .admob-banner-container {
       width: 100%;
       min-height: 50px;
@@ -281,6 +318,40 @@
       letter-spacing: 0.6px;
       text-transform: uppercase;
       font-weight: 700;
+    }
+
+    /* ECRAN PAUZĂ OVERLAY (BLUR 2026) */
+    .pause-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .pause-overlay.active {
+      display: flex;
+    }
+    .pause-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 24px;
+      border-radius: 20px;
+      max-width: 320px;
+      width: 100%;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 
@@ -307,6 +378,19 @@
 
   <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
   <div id="quizScreen" class="screen">
+    
+    <!-- OVERLAY PAUZĂ -->
+    <div id="pauseOverlay" class="pause-overlay" onclick="window.togglePause && window.togglePause()">
+      <div class="pause-card" onclick="event.stopPropagation()">
+        <div style="width: 52px; height: 52px; background: rgba(59,130,246,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><rect x="9" y="9" width="2" height="6"/><rect x="13" y="9" width="2" height="6"/></svg>
+        </div>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Examen în Pauză</h2>
+        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.45; margin-bottom: 20px;">Cronometrul este oprit, iar întrebarea este protejată.</p>
+        <button class="btn btn-submit" onclick="window.togglePause && window.togglePause()">Reia Testul</button>
+      </div>
+    </div>
+
     <div class="dashboard">
       <div class="stat-pill pill-green">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -316,7 +400,14 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         <span id="lblWrong">0</span>/5
       </div>
-      <div class="stat-pill pill-timer" id="lblTimer">30:00</div>
+      
+      <!-- Cronometru + Buton Pauză -->
+      <div class="timer-container">
+        <span class="pill-timer" id="lblTimer">30:00</span>
+        <button class="btn-pause-inline" id="btnPause" onclick="window.togglePause && window.togglePause()" title="Pauză / Reia">
+          <svg id="iconPause" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+        </button>
+      </div>
     </div>
 
     <div class="sub-dashboard">
@@ -328,7 +419,7 @@
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <div class="scroll-content">
+    <div class="scroll-content" id="quizContent">
       <div class="card-question">
         <div class="q-badge">Întrebarea activă</div>
         <div class="q-text" id="lblQuestionText"></div>
