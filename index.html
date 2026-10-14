@@ -3,46 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Chestionare B Offline</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    html, body { min-height: 100%; background-color: #0b1329; color: #f8fafc; }
     
-    .screen { display: none; flex-direction: column; min-height: 100vh; padding: 16px; padding-bottom: 40px; }
+    html, body {
+      height: 100%;
+      background-color: #0b1329;
+      color: #f8fafc;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 14px;
+    }
     .screen.active { display: flex; }
 
-    /* Panou bord examen */
-    .dashboard { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #334155; }
+    /* Panou de bord */
+    .dashboard {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #334155;
+      flex-shrink: 0;
+    }
     .stat { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
     .stat-green { background: #064e3b; color: #34d399; }
     .stat-red { background: #7f1d1d; color: #f87171; }
     .stat-timer { background: #1e3a8a; color: #60a5fa; font-variant-numeric: tabular-nums; }
 
+    /* Zonă cu scroll pentru conținut */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 12px;
+    }
+
     /* Caseta întrebării */
-    .card-question { background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 12px; }
-    .q-number { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.5px; }
-    .q-text { font-size: 15px; font-weight: 600; line-height: 1.45; color: #f1f5f9; margin-top: 6px; }
+    .card-question {
+      background: #1e293b;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      margin-bottom: 12px;
+    }
+    .q-number { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+    .q-text { font-size: 15px; font-weight: 600; line-height: 1.4; color: #f1f5f9; margin-top: 6px; }
 
     /* Opțiuni */
-    .options-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-    .opt-card { background: #172554; border: 2px solid #1e3a8a; border-radius: 10px; padding: 14px; font-size: 14px; line-height: 1.4; color: #e2e8f0; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .options-group { display: flex; flex-direction: column; gap: 10px; }
+    .opt-card {
+      background: #172554;
+      border: 2px solid #1e3a8a;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.35;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
     .opt-card.selected { background: #1d4ed8; border-color: #60a5fa; color: #fff; font-weight: 500; }
-    .opt-tag { font-weight: 800; font-size: 13px; background: rgba(255,255,255,0.12); padding: 5px 9px; border-radius: 6px; }
+    .opt-tag { font-weight: 800; font-size: 13px; background: rgba(255,255,255,0.12); padding: 5px 9px; border-radius: 6px; flex-shrink: 0; }
 
-    /* Caseta explicație legislație rutieră */
-    .expl-box { background: #022c22; border: 1px solid #059669; border-radius: 10px; padding: 12px; margin-bottom: 16px; font-size: 13px; line-height: 1.45; color: #a7f3d0; display: none; }
+    /* Explicație */
+    .expl-box {
+      background: #022c22;
+      border: 1px solid #059669;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #a7f3d0;
+      display: none;
+    }
 
-    /* Butoane */
-    .bottom-bar { margin-top: 10px; margin-bottom: 24px; }
-    .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: center; }
+    /* Bara de jos cu butonul - permanent vizibilă */
+    .bottom-bar {
+      padding-top: 8px;
+      padding-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
     .btn-submit { background: #2563eb; color: #fff; }
     .btn-submit:active { background: #1d4ed8; }
 
-    /* Istoric / Rezumat final */
-    .final-score { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .final-score { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -50,7 +115,7 @@
   <!-- ECRAN 1: START -->
   <div id="startScreen" class="screen active" style="justify-content: center; text-align: center;">
     <h1 style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Permis Auto Cat. B</h1>
-    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 28px;">Modul oficial de examinare offline (26 întrebări, max. 4 greșeli permise).</p>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 24px;">Examen oficial categoria B (26 întrebări).</p>
     <button class="btn btn-submit" onclick="startTest()">Începe Chestionarul</button>
   </div>
 
@@ -62,15 +127,18 @@
       <div class="stat stat-timer" id="lblTimer">30:00</div>
     </div>
 
-    <div class="card-question">
-      <div class="q-number">Întrebarea <span id="lblIndex">1</span> / 26</div>
-      <div class="q-text" id="lblQuestionText"></div>
+    <!-- Zona cu derulare -->
+    <div class="scroll-content">
+      <div class="card-question">
+        <div class="q-number">Întrebarea <span id="lblIndex">1</span> / 26</div>
+        <div class="q-text" id="lblQuestionText"></div>
+      </div>
+
+      <div class="options-group" id="containerOptions"></div>
+      <div id="boxExplanation" class="expl-box"></div>
     </div>
 
-    <div class="options-group" id="containerOptions"></div>
-
-    <div id="boxExplanation" class="expl-box"></div>
-
+    <!-- Butonul fixat jos -->
     <div class="bottom-bar">
       <button class="btn btn-submit" id="btnAction" onclick="validateCurrentAnswer()">Trimite Răspunsul</button>
     </div>
@@ -84,7 +152,6 @@
   </div>
 
   <script>
-    // Bază de date locală (offline) - poate fi extinsă cu sute de întrebări
     const localDatabase = [
       {
         question: "În care dintre următoarele situații este interzisă depășirea vehiculelor pe drumurile publice?",
@@ -94,7 +161,7 @@
           { id: "C", text: "La trecerile pentru pietoni semnalizate." }
         ],
         correct: ["A", "B", "C"],
-        article: "Art. 120 Regulament: Depășirea este interzisă în intersecții nedirijate, pe trecerile de pietoni semnalizate și în curbe/locuri unde vizibilitatea este redusă sub 50 m."
+        article: "Art. 120 Regulament: Depășirea este interzisă în intersecții nedirijate, pe trecerile de pietoni semnalizate și în curbe unde vizibilitatea este redusă sub 50 m."
       },
       {
         question: "Cum procedați la apropierea de o trecere la nivel cu o cale ferată industrială fără bariere?",
@@ -104,27 +171,17 @@
           { id: "C", text: "Măriți viteza pentru a elibera cât mai repede zona de traversare." }
         ],
         correct: ["B"],
-        article: "Art. 138 Regulament: La trecerea la nivel cu o cale ferată industrială, conducătorul este obligat doar să reducă viteza și să se asigure că nu se apropie niciun vehicul feroviar."
+        article: "Art. 138 Regulament: La trecerea la nivel cu o cale ferată industrială, conducătorul este obligat doar să reducă viteza și să se asigure că nu se apropie niciun tren."
       },
       {
         question: "Care este viteza maximă legală admisă în localități pentru categoria B?",
         options: [
           { id: "A", text: "40 km/h." },
-          { id: "B", text: "50 km/h (sau până la 80 km/h pe tronsoane stabilite special de administrator)." },
+          { id: "B", text: "50 km/h (sau până la 80 km/h pe tronsoane speciale stabilite de administrator)." },
           { id: "C", text: "70 km/h în mod general." }
         ],
         correct: ["B"],
-        article: "Art. 49 OUG 195/2002: Limita maximă de viteză în localități este de 50 km/h. Pe anumite sectoare, administratorul poate crește limita până la maximum 80 km/h."
-      },
-      {
-        question: "Ce obligații aveți la semnalul polițistului orientat cu brațul stâng întins orizontal?",
-        options: [
-          { id: "A", text: "Oprire pentru vehiculele care vin din fața polițistului." },
-          { id: "B", text: "Oprire pentru vehiculele care vin din spatele polițistului." },
-          { id: "C", text: "Semnalul înseamnă 'Oprire' pentru vehiculele care vin din fața sa." }
-        ],
-        correct: ["B"],
-        article: "Art. 88 Regulament: Brațul stâng întins orizontal al polițistului semnifică 'Oprire' pentru vehiculele și pietonii care vin din spatele acestuia."
+        article: "Art. 49 OUG 195/2002: Limita maximă în localități este de 50 km/h, cu posibilitatea extinderii pe anumite sectoare până la 80 km/h."
       }
     ];
 
@@ -207,7 +264,7 @@
         }
 
         const btn = document.getElementById('btnAction');
-        btn.textContent = "Am înțeles, mergi mai departe";
+        btn.textContent = "Continuă la următoarea";
         btn.onclick = advance;
       }
     }
