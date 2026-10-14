@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AutoPass B • 2026</title>
-  <!-- Font modern 2026 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,8 +15,6 @@
       --surface-border: rgba(255, 255, 255, 0.08);
       --primary: #3b82f6;
       --primary-glow: rgba(59, 130, 246, 0.35);
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -41,11 +38,11 @@
       display: none;
       flex-direction: column;
       height: 100%;
-      padding: 18px;
+      padding: 16px;
     }
     .screen.active { display: flex; }
 
-    /* Dashboard modern - Glassmorphism */
+    /* Dashboard modern */
     .dashboard {
       display: flex;
       justify-content: space-between;
@@ -53,11 +50,10 @@
       background: var(--surface);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 12px 16px;
-      border-radius: 16px;
-      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
       border: 1px solid var(--surface-border);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
     }
 
@@ -67,19 +63,19 @@
       gap: 6px;
       font-size: 13px;
       font-weight: 700;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 20px;
     }
     .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
     .pill-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
     .pill-timer { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); font-variant-numeric: tabular-nums; }
 
-    /* Bară de progres subțire tip 2026 */
+    /* Bară progres */
     .progress-bar {
       height: 4px;
       background: rgba(255, 255, 255, 0.08);
       border-radius: 4px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -90,11 +86,11 @@
       transition: width 0.3s ease;
     }
 
-    /* Zonă cu scroll */
+    /* Conținut cu scroll */
     .scroll-content {
       flex: 1;
       overflow-y: auto;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
     }
 
     /* Card întrebare */
@@ -102,11 +98,10 @@
       background: var(--surface);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 18px;
-      border-radius: 20px;
+      padding: 16px;
+      border-radius: 16px;
       border: 1px solid var(--surface-border);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .q-badge {
       display: inline-block;
@@ -114,23 +109,22 @@
       text-transform: uppercase;
       color: #60a5fa;
       font-weight: 800;
-      letter-spacing: 0.8px;
       background: rgba(59, 130, 246, 0.12);
-      padding: 4px 10px;
-      border-radius: 20px;
+      padding: 4px 8px;
+      border-radius: 12px;
       margin-bottom: 8px;
     }
     .q-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.45;
       color: #ffffff;
     }
 
     /* Caseta imaginii */
     .q-image-container {
-      margin-top: 14px;
-      border-radius: 14px;
+      margin-top: 12px;
+      border-radius: 12px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: none;
@@ -139,50 +133,49 @@
     }
     .q-image {
       max-width: 100%;
-      max-height: 220px;
+      max-height: 200px;
       object-fit: contain;
       display: block;
       margin: 0 auto;
     }
 
-    /* Carduri de opțiuni */
+    /* Opțiuni */
     .options-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .opt-card {
       background: rgba(30, 41, 59, 0.5);
       border: 1.5px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 14px 16px;
+      border-radius: 14px;
+      padding: 12px 14px;
       font-size: 14px;
-      line-height: 1.45;
+      line-height: 1.4;
       color: #cbd5e1;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.15s ease;
     }
     .opt-card:active {
       transform: scale(0.98);
     }
     .opt-card.selected {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(29, 78, 216, 0.9));
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.85), rgba(29, 78, 216, 0.95));
       border-color: #60a5fa;
       color: #ffffff;
-      box-shadow: 0 4px 16px var(--primary-glow);
+      box-shadow: 0 4px 14px var(--primary-glow);
     }
     .opt-tag {
       font-weight: 800;
       font-size: 13px;
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
-      padding: 6px 11px;
-      border-radius: 10px;
+      padding: 5px 9px;
+      border-radius: 8px;
       flex-shrink: 0;
-      transition: background 0.2s;
     }
     .opt-card.selected .opt-tag {
       background: #ffffff;
@@ -194,27 +187,26 @@
       background: rgba(6, 78, 59, 0.5);
       border: 1px solid rgba(52, 211, 153, 0.3);
       backdrop-filter: blur(12px);
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 14px;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.45;
       color: #a7f3d0;
       display: none;
-      animation: fadeIn 0.3s ease;
     }
 
-    /* Bara de jos */
+    /* Buton fixat jos */
     .bottom-bar {
-      padding-top: 10px;
-      padding-bottom: env(safe-area-inset-bottom, 14px);
+      padding-top: 8px;
+      padding-bottom: env(safe-area-inset-bottom, 10px);
       flex-shrink: 0;
     }
     .btn {
       width: 100%;
-      padding: 16px;
+      padding: 15px;
       border: none;
-      border-radius: 16px;
+      border-radius: 14px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
@@ -224,27 +216,19 @@
     .btn-submit {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #ffffff;
-      box-shadow: 0 8px 24px var(--primary-glow);
+      box-shadow: 0 6px 20px var(--primary-glow);
     }
     .btn-submit:active {
       transform: scale(0.98);
-      box-shadow: 0 4px 12px var(--primary-glow);
     }
 
-    /* Ecran Start & Final */
     .hero-title {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 800;
-      letter-spacing: -0.5px;
       background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -252,29 +236,28 @@
 
   <!-- ECRAN 1: START -->
   <div id="startScreen" class="screen active" style="justify-content: center; text-align: center; padding: 24px;">
-    <div style="width: 64px; height: 64px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 8px 24px var(--primary-glow);">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 11l2-6h10l2 6"/></svg>
+    <div style="width: 60px; height: 60px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 6px 20px var(--primary-glow);">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 11l2-6h10l2 6"/></svg>
     </div>
     <h1 class="hero-title">AutoPass B</h1>
-    <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 32px;">Simulator de examen auto cu legislație actualizată și asistent inteligent.</p>
-    <button class="btn btn-submit" onclick="startTest()">Începe Chestionarul</button>
+    <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 28px;">Simulator examen oficial DRPCIV / DGPCI cu întrebări și imagini rutiere.</p>
+    <button class="btn btn-submit" id="btnStart" onclick="startTest()">Începe Chestionarul</button>
   </div>
 
   <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
   <div id="quizScreen" class="screen">
     <div class="dashboard">
       <div class="stat-pill pill-green">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="lblCorrect">0</span>
       </div>
       <div class="stat-pill pill-red">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         <span id="lblWrong">0</span>/5
       </div>
       <div class="stat-pill pill-timer" id="lblTimer">30:00</div>
     </div>
 
-    <!-- Bară de progres dinamică -->
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
@@ -300,14 +283,15 @@
 
   <!-- ECRAN 3: REZULTAT FINAL -->
   <div id="endScreen" class="screen" style="justify-content: center; text-align: center; padding: 24px;">
-    <h1 id="endTitle" style="font-size: 34px; font-weight: 800; margin-bottom: 10px;"></h1>
-    <p id="endSubtitle" style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;"></p>
+    <h1 id="endTitle" style="font-size: 32px; font-weight: 800; margin-bottom: 10px;"></h1>
+    <p id="endSubtitle" style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px;"></p>
     <button class="btn btn-submit" onclick="location.reload()">Reia Chestionarul</button>
   </div>
 
-  <!-- Baza de date din questions.js -->
+  <!-- ÎNCĂRCAREA BAZEI DE DATE DIN FIȘIERUL SEPARAT -->
   <script src="questions.js"></script>
 
+  <!-- LOGICA APLICAȚIEI -->
   <script>
     let activeQuestions = [];
     let currentIndex = 0;
@@ -327,22 +311,34 @@
     }
 
     function startTest() {
-      const shuffled = shuffleArray(localDatabase);
-      activeQuestions = shuffled.slice(0, 26);
+      // Verificare de siguranță pentru încărcarea questions.js
+      if (!window.questionsData || !Array.isArray(window.questionsData) || window.questionsData.length === 0) {
+        alert("Eroare: Fișierul questions.js nu a fost găsit sau este gol. Verifică depozitul GitHub!");
+        return;
+      }
 
-      currentIndex = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      secondsLeft = 30 * 60;
-      document.getElementById('lblCorrect').textContent = '0';
-      document.getElementById('lblWrong').textContent = '0';
-      document.getElementById('lblTotal').textContent = activeQuestions.length;
+      try {
+        const shuffled = shuffleArray(window.questionsData);
+        activeQuestions = shuffled.slice(0, 26);
 
-      document.getElementById('startScreen').classList.remove('active');
-      document.getElementById('quizScreen').classList.add('active');
-      
-      renderQuestion();
-      timerRef = setInterval(updateTimer, 1000);
+        currentIndex = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        secondsLeft = 30 * 60;
+
+        document.getElementById('lblCorrect').textContent = '0';
+        document.getElementById('lblWrong').textContent = '0';
+        document.getElementById('lblTotal').textContent = activeQuestions.length;
+
+        document.getElementById('startScreen').classList.remove('active');
+        document.getElementById('quizScreen').classList.add('active');
+        
+        renderQuestion();
+        if (timerRef) clearInterval(timerRef);
+        timerRef = setInterval(updateTimer, 1000);
+      } catch (err) {
+        alert("A apărut o problemă: " + err.message);
+      }
     }
 
     function updateTimer() {
@@ -357,7 +353,6 @@
       userSelections.clear();
       document.getElementById('boxExplanation').style.display = 'none';
 
-      // Actualizare bară de progres
       const progress = ((currentIndex + 1) / activeQuestions.length) * 100;
       document.getElementById('progressFill').style.width = `${progress}%`;
 
