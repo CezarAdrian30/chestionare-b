@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chestionare B Offline</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
+    }
     
     html, body {
       height: 100%;
@@ -39,7 +45,7 @@
     .stat-red { background: #7f1d1d; color: #f87171; }
     .stat-timer { background: #1e3a8a; color: #60a5fa; font-variant-numeric: tabular-nums; }
 
-    /* Zonă cu scroll pentru conținut */
+    /* Zonă cu scroll pentru întrebare și variante */
     .scroll-content {
       flex: 1;
       overflow-y: auto;
@@ -56,6 +62,22 @@
     }
     .q-number { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
     .q-text { font-size: 15px; font-weight: 600; line-height: 1.4; color: #f1f5f9; margin-top: 6px; }
+
+    /* Imaginea întrebării */
+    .q-image-container {
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0f172a;
+      display: none;
+      text-align: center;
+    }
+    .q-image {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
 
     /* Opțiuni */
     .options-group { display: flex; flex-direction: column; gap: 10px; }
@@ -75,7 +97,7 @@
     .opt-card.selected { background: #1d4ed8; border-color: #60a5fa; color: #fff; font-weight: 500; }
     .opt-tag { font-weight: 800; font-size: 13px; background: rgba(255,255,255,0.12); padding: 5px 9px; border-radius: 6px; flex-shrink: 0; }
 
-    /* Explicație */
+    /* Explicație legislație */
     .expl-box {
       background: #022c22;
       border: 1px solid #059669;
@@ -88,206 +110,6 @@
       display: none;
     }
 
-    /* Bara de jos cu butonul - permanent vizibilă */
+    /* Butonul fixat jos */
     .bottom-bar {
-      padding-top: 8px;
-      padding-bottom: 14px;
-      flex-shrink: 0;
-    }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-    .btn-submit { background: #2563eb; color: #fff; }
-    .btn-submit:active { background: #1d4ed8; }
-
-    .final-score { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
-  </style>
-</head>
-<body>
-
-  <!-- ECRAN 1: START -->
-  <div id="startScreen" class="screen active" style="justify-content: center; text-align: center;">
-    <h1 style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Permis Auto Cat. B</h1>
-    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 24px;">Examen oficial categoria B (26 întrebări).</p>
-    <button class="btn btn-submit" onclick="startTest()">Începe Chestionarul</button>
-  </div>
-
-  <!-- ECRAN 2: EXAMEN ÎN DESFĂȘURARE -->
-  <div id="quizScreen" class="screen">
-    <div class="dashboard">
-      <div class="stat stat-green">Corecte: <span id="lblCorrect">0</span></div>
-      <div class="stat stat-red">Greșite: <span id="lblWrong">0</span>/5</div>
-      <div class="stat stat-timer" id="lblTimer">30:00</div>
-    </div>
-
-    <!-- Zona cu derulare -->
-    <div class="scroll-content">
-      <div class="card-question">
-        <div class="q-number">Întrebarea <span id="lblIndex">1</span> / 26</div>
-        <div class="q-text" id="lblQuestionText"></div>
-      </div>
-
-      <div class="options-group" id="containerOptions"></div>
-      <div id="boxExplanation" class="expl-box"></div>
-    </div>
-
-    <!-- Butonul fixat jos -->
-    <div class="bottom-bar">
-      <button class="btn btn-submit" id="btnAction" onclick="validateCurrentAnswer()">Trimite Răspunsul</button>
-    </div>
-  </div>
-
-  <!-- ECRAN 3: REZULTAT FINAL -->
-  <div id="endScreen" class="screen" style="justify-content: center; text-align: center;">
-    <div id="endTitle" class="final-score"></div>
-    <p id="endSubtitle" style="color: #94a3b8; font-size: 15px; margin-bottom: 24px;"></p>
-    <button class="btn btn-submit" onclick="location.reload()">Reia Chestionarul</button>
-  </div>
-
-  <script>
-    const localDatabase = [
-      {
-        question: "În care dintre următoarele situații este interzisă depășirea vehiculelor pe drumurile publice?",
-        options: [
-          { id: "A", text: "În intersecțiile cu circulație nedirijată." },
-          { id: "B", text: "Pe sectoarele de drum unde vizibilitatea este sub 50 m." },
-          { id: "C", text: "La trecerile pentru pietoni semnalizate." }
-        ],
-        correct: ["A", "B", "C"],
-        article: "Art. 120 Regulament: Depășirea este interzisă în intersecții nedirijate, pe trecerile de pietoni semnalizate și în curbe unde vizibilitatea este redusă sub 50 m."
-      },
-      {
-        question: "Cum procedați la apropierea de o trecere la nivel cu o cale ferată industrială fără bariere?",
-        options: [
-          { id: "A", text: "Opriți obligatoriu autovehiculul înainte de indicator." },
-          { id: "B", text: "Reduceți viteza și vă asigurați că nu circulă niciun vehicul feroviar." },
-          { id: "C", text: "Măriți viteza pentru a elibera cât mai repede zona de traversare." }
-        ],
-        correct: ["B"],
-        article: "Art. 138 Regulament: La trecerea la nivel cu o cale ferată industrială, conducătorul este obligat doar să reducă viteza și să se asigure că nu se apropie niciun tren."
-      },
-      {
-        question: "Care este viteza maximă legală admisă în localități pentru categoria B?",
-        options: [
-          { id: "A", text: "40 km/h." },
-          { id: "B", text: "50 km/h (sau până la 80 km/h pe tronsoane speciale stabilite de administrator)." },
-          { id: "C", text: "70 km/h în mod general." }
-        ],
-        correct: ["B"],
-        article: "Art. 49 OUG 195/2002: Limita maximă în localități este de 50 km/h, cu posibilitatea extinderii pe anumite sectoare până la 80 km/h."
-      }
-    ];
-
-    let currentIndex = 0;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let userSelections = new Set();
-    let secondsLeft = 30 * 60;
-    let timerRef = null;
-
-    function startTest() {
-      document.getElementById('startScreen').classList.remove('active');
-      document.getElementById('quizScreen').classList.add('active');
-      renderQuestion();
-      timerRef = setInterval(updateTimer, 1000);
-    }
-
-    function updateTimer() {
-      secondsLeft--;
-      const min = Math.floor(secondsLeft / 60);
-      const sec = secondsLeft % 60;
-      document.getElementById('lblTimer').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
-      if (secondsLeft <= 0) finalize(false, "Timpul de 30 de minute a expirat.");
-    }
-
-    function renderQuestion() {
-      userSelections.clear();
-      document.getElementById('boxExplanation').style.display = 'none';
-
-      const btn = document.getElementById('btnAction');
-      btn.textContent = "Trimite Răspunsul";
-      btn.onclick = validateCurrentAnswer;
-
-      const q = localDatabase[currentIndex];
-      document.getElementById('lblIndex').textContent = currentIndex + 1;
-      document.getElementById('lblQuestionText').textContent = q.question;
-
-      const container = document.getElementById('containerOptions');
-      container.innerHTML = '';
-
-      q.options.forEach(opt => {
-        const item = document.createElement('div');
-        item.className = 'opt-card';
-        item.innerHTML = `<span class="opt-tag">${opt.id}</span><span>${opt.text}</span>`;
-        item.onclick = () => {
-          if (userSelections.has(opt.id)) {
-            userSelections.delete(opt.id);
-            item.classList.remove('selected');
-          } else {
-            userSelections.add(opt.id);
-            item.classList.add('selected');
-          }
-        };
-        container.appendChild(item);
-      });
-    }
-
-    function validateCurrentAnswer() {
-      const q = localDatabase[currentIndex];
-      const selectedArr = Array.from(userSelections).sort();
-      const correctArr = [...q.correct].sort();
-
-      const isMatch = JSON.stringify(selectedArr) === JSON.stringify(correctArr);
-
-      if (isMatch) {
-        correctCount++;
-        document.getElementById('lblCorrect').textContent = correctCount;
-        advance();
-      } else {
-        wrongCount++;
-        document.getElementById('lblWrong').textContent = wrongCount;
-
-        const box = document.getElementById('boxExplanation');
-        box.style.display = 'block';
-        box.innerHTML = `<strong>Răspuns greșit!</strong> Variante corecte: <b>${correctArr.join(', ')}</b><br><br>${q.article}`;
-
-        if (wrongCount >= 5) {
-          finalize(false, "Ai acumulat 5 răspunsuri greșite. Examen picat.");
-          return;
-        }
-
-        const btn = document.getElementById('btnAction');
-        btn.textContent = "Continuă la următoarea";
-        btn.onclick = advance;
-      }
-    }
-
-    function advance() {
-      currentIndex++;
-      if (currentIndex >= localDatabase.length) {
-        finalize(correctCount >= 22, `Ai obținut ${correctCount} puncte din 26.`);
-      } else {
-        renderQuestion();
-      }
-    }
-
-    function finalize(isPassed, details) {
-      clearInterval(timerRef);
-      document.getElementById('quizScreen').classList.remove('active');
-      document.getElementById('endScreen').classList.add('active');
-
-      const title = document.getElementById('endTitle');
-      title.textContent = isPassed ? "ADMIS 🎉" : "RESPINS ❌";
-      title.style.color = isPassed ? "#34d399" : "#f87171";
-      document.getElementById('endSubtitle').textContent = details;
-    }
-  </script>
-</body>
-</html>
+      padding-top: 8px
